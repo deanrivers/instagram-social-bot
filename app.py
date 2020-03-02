@@ -12,17 +12,28 @@ from tkinter import *
 root = tk.Tk()
 
 #scroll function
-def scroll():
-    driver.execute_script("window.scrollTo(0,8000)") 
+def scroll(driver,scroll_height):
+    driver.execute_script("window.scrollTo(0,"+str(scroll_height)+")") 
 
 #like function
-def like():
-    like_buttons = driver.find_elements_by_class_name('fr66n')
-    for items in like_buttons:
-        items.find_elements_by_class_name('wp0rb')
+def like(driver):
+    clicked_elements = []
+    like_buttons_container = driver.find_elements_by_class_name('fr66n')
+    # print('Like button set:',like_buttons_container)
+    print(like_buttons_container.session())
+
+    # for items in like_buttons_container
+    #     like_button = items.find_element_by_tag_name('button')
+    #     if like_button not in clicked_elements:
+    #         like_button.click()
+        
+    #like_buttons[0].find_element_by_tag_name('button').click()
+
+    
+
 
 #general process
-def login(config,loop_limit):
+def login(config):
     #variables from gui
     username_text = username_input.get()
     password_text = password_input.get()
@@ -57,49 +68,63 @@ def login(config,loop_limit):
         time.sleep(2)
         driver.find_element_by_xpath('/html/body/div[4]/div/div/div[3]/button[2]').click()
 
-    #     #enter while loop for a specified number of iterations
-    #     i = 0
-    #     while i < loop_limit:
-    #         #scroll down to load more content
-    #         time.sleep(2)
-    #         scroll()
+        #enter while loop for a specified number of iterations
+        i = 0
+        scroll_height = 0
+        while i < 3:
+            print('Iteration number:',i)
+            print('Scroll height:',scroll_height)
+
+            #scroll down to load more content
+            time.sleep(2)
+            scroll(driver,scroll_height)
+
+            #gather all like buttons and iterate
+            time.sleep(2)
+            like(driver)
             
-    #         #gather all like buttons and iterate
-    #         time.sleep(2)
-    #         like()
-            
-    #         #iterate
-    #         i = i+1
+            #iterate and icrease scroll height
+            i = i+1
+            scroll_height = 1080*i
         
-    #     #out of loop
-    #     print('loop ended')
+        #out of loop
+        print('loop ended')
 
     except Exception as e:
         print(e)
 
+    finally:
+        driver.quit()
 
-canvas = tk.Canvas(root,height=500,width=500,bg="#263D42")
+#tkinter
+canvas = tk.Canvas(root,height=500,width=500,bg="#ddd")
 canvas.pack()
 
+background = '#ddd'
+
+#app header
+header = Label(root,text="Instagram Social Tool",font=("Helvetica",40),bg=background)
+canvas.create_window(250,100,window=header)
+
 #username label
-username_label = Label(root, text="username", font=("Helvetica",14))
-canvas.create_window(250,100,window=username_label)
+username_label = Label(root, text="username", font=("Helvetica",14),bg=background)
+canvas.create_window(250,170,window=username_label)
 
 #usename input
 username_input = tk.Entry(root)
-canvas.create_window(250,150,window=username_input)
+canvas.create_window(250,200,window=username_input)
 
 #password label
-password_label = Label(root, text="password", font=("Helvetica",14))
-canvas.create_window(250,200,window=password_label)
+password_label = Label(root, text="password", font=("Helvetica",14),bg=background)
+canvas.create_window(250,290,window=password_label)
 
 #password input
 password_input = tk.Entry(root)
-canvas.create_window(250,250,window=password_input)
+canvas.create_window(250,320,window=password_input)
 
 #submit button
-button = tk.Button(text='Get the Square Root', command=lambda:login(config,10))
-canvas.create_window(250, 300, window=button)
+button = tk.Button(text='Submit', command=lambda:login(config))
+canvas.create_window(250, 420, window=button)
 
 #build GUI
 root.resizable(False, False)
