@@ -14,15 +14,14 @@ from tkinter import *
 chrome_options = Options()
 driver = webdriver.Chrome(executable_path='/usr/local/bin/chromedriver',options=chrome_options)
 
-driver.get("http://www.javascriptkit.com/javatutors/detect-user-scroll-amount.shtml")
+driver.get("https://instagram.com")
 try:
 
-    one  = driver.find_element_by_xpath('//*[@id="contentcolumn"]/h3[5]/a')
-    two  = driver.find_element_by_xpath('//*[@id="contentcolumn"]/h3[5]/a')
+    # one  = driver.find_element_by_xpath('//*[@id="contentcolumn"]/h3[5]/a')
+    # two  = driver.find_element_by_xpath('//*[@id="contentcolumn"]/h3[5]/a')
 
-    print(one)
-    print(two)
-    
-    
+    # print(one)
+    # print(two)
+
 except Exception as e:
     print('This is the error:',e)

@@ -12,54 +12,6 @@ from tkinter import *
 
 root = tk.Tk()
 
-#like function
-def like(driver,clicked_elements):
-    clicked_arr = clicked_elements
-    queue_arr = []
-    
-
-    try:
-        like_buttons_container = driver.find_elements_by_class_name('fr66n')
-    except Exception as e:
-        print('Error selecting class.',e)
-
-    #put into global clicked_arr and queue_arr for this iteration
-    for items in like_buttons_container:
-        try:
-            like_button = items.find_element_by_tag_name('button')
-            if like_button not in clicked_arr:
-                clicked_arr.append(like_button)
-                queue_arr.append(like_button)
-        except Exception as e:
-            print('Outter Loop error',e)
-
-    #iterate and click
-    print('Queue before loop:',queue_arr)
-    for button in queue_arr:
-        print('b4')
-        actions = ActionChains(driver)
-        actions.move_to_element(button).perform()
-        print('af')
-        print('scroll performed for:',button)
-        time.sleep(2)
-        
-        try:
-            button.click()
-            print('---')
-            print('---')
-            print('---')
-            print('An element was clicked:',button)
-            print('---')
-            print('---')
-            print('---')
-        except Exception as e:
-            print('Error clicking for',button)
-
-    #like_buttons[0].find_element_by_tag_name('button').click()
-    print('Clicked array for this iteration:',clicked_arr)
-    final_element = clicked_arr[len(clicked_arr)-1]
-    return clicked_arr
-
 def login(driver):
      #variables from gui
     username_text = username_input.get()
@@ -91,6 +43,58 @@ def login(driver):
     except Exception as e:
         print('Login error:',e)
 
+#like function
+def like(driver):
+    clicked_arr = []
+    queue_arr = []
+    while True:
+        try:
+            #put button into list
+            like_buttons = driver.find_elements_by_css_selector('span.fr66n>button')
+            print('Like buttons selected:',like_buttons)
+        except Exception as e:
+            print('Error selecting button.',e)
+
+        #loop through buttons
+        #try and click if it does not exist in clicked_arr
+        for button in like_buttons:
+            if button not in clicked_arr:
+                try:
+                    actions = ActionChains(driver)
+                    actions.move_to_element(button).perform()
+                    #append to clicked queue
+                    clicked_arr.append(button)
+                    time.sleep(2)
+
+                    button.click()
+                    print('---')
+                    print('---')
+                    print('---')
+                    print('An element was clicked:',button)
+                    print('---')
+                    print('---')
+                    print('---')
+                    time.sleep(2)
+                except Exception as e:
+                    print('Error clicking for',button,e)
+
+    #scroll to top
+    driver.execute_script("window.scrollTo(0,0)")
+    # actions.move_to_element(clicked_arr[0]).perform()
+    print('scroll to top.')
+    print('clicked arr:',clicked_arr)
+
+    time.sleep(5)
+    new_arr = []
+
+    #like_buttons[0].find_element_by_tag_name('button').click()
+    return clicked_arr
+#************************************************************************************************
+#************************************************************************************************
+#************************************************************************************************
+#************************************************************************************************
+#************************************************************************************************
+
 #general process
 def launch(config):
     chrome_options = Options()
@@ -100,20 +104,12 @@ def launch(config):
     #login
     login(driver)
 
-    #clicked elements
-    done_elements = []
-
     #enter while loop for a specified number of iterations
-    i = 0
-    scroll_height = 0
-    while i < 4:
-        print('Iteration number:',i)
-        x = like(driver,done_elements)
-        done_elements = x
-        i = i+1
+    done_elements = like(driver)
+    
 
-    print('while loop ended')
-    print('Clicked Elements:',done_elements)
+    # print('while loop ended')
+    # print('Clicked Elements:',done_elements)
     print('EVERYTHING WAS CLICKED CORRECTLY!!!')
 
 
@@ -125,7 +121,7 @@ canvas.pack()
 background = '#ddd'
 
 #app header
-header = Label(root,text="Instagram Social Tool",font=("Helvetica",40),bg=background)
+header = Label(root,text="Instagram 'Like' Bot",font=("Helvetica",40),bg=background)
 canvas.create_window(250,100,window=header)
 
 #username label
