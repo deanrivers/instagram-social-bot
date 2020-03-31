@@ -47,10 +47,13 @@ def login(driver):
 def like(driver):
     clicked_arr = []
     queue_arr = []
+    
+    
     while True:
         try:
             #put button into list
             like_buttons = driver.find_elements_by_css_selector('span.fr66n>button')
+            # like_buttons = driver.find_elements_by_css_selector('div._97aPb ')
             print('Like buttons selected:',like_buttons)
         except Exception as e:
             print('Error selecting button.',e)
@@ -60,13 +63,21 @@ def like(driver):
         for button in like_buttons:
             if button not in clicked_arr:
                 try:
+                    print('first click')
                     actions = ActionChains(driver)
                     actions.move_to_element(button).perform()
+
+                    # actions.move_to_element(button)
+                    # actions.perform()
                     #append to clicked queue
                     clicked_arr.append(button)
                     time.sleep(2)
 
-                    button.click()
+                    # button.click()
+                    print('second click')
+                    #button.click()
+
+                    # actions.double_click(button)
                     print('---')
                     print('---')
                     print('---')
@@ -105,7 +116,7 @@ def launch(config):
     login(driver)
 
     #enter while loop for a specified number of iterations
-    done_elements = like(driver)
+    like(driver)
     
 
     # print('while loop ended')
