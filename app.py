@@ -106,20 +106,30 @@ def like(driver):
             print('jump performed')
         except Exception as e:
             print('jump error:',e)
-
+        
         #programatically scroll and stop once listener detects that the last button has been removed from the DOM
-        
-        
+        scroll_continue = True
+        scroll_height = last_button.location['y']
 
-        
+        while scroll_continue:
+            print('scroll')
+            time.sleep(1)
 
-
-
-
-        
-
-
-
+            #determine if element still exists
+            #try and scoll to it
+            try:
+                actions = ActionChains(driver)
+                actions.move_to_element(last_button).perform()
+                print('rescroll performed')
+                
+            except Exception as e:
+                print('Last button in list no longer exists:',e)
+                scroll_continue = False
+            else:
+                print('Total scroll:',scroll_height)
+                driver.execute_script("window.scrollTo(0,"+str(scroll_height)+")")
+                scroll_height = scroll_height+500
+                
 
     #scroll to top
     driver.execute_script("window.scrollTo(0,0)")
