@@ -143,6 +143,7 @@ def like(driver,like_limit):
                 print('Last button in list no longer exists...new elements are available')
                 scroll_continue = False
             #if it does not...stop scrolling
+            
             else:
                 print('Total scroll:',last_button_scroll_height)
                 driver.execute_script("window.scrollTo(0,"+str(last_button_scroll_height)+")")
