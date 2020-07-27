@@ -9,9 +9,11 @@ from selenium.webdriver.common.action_chains import ActionChains
 import time
 import tkinter as tk
 from tkinter import *
-
+from webdriver_manager.chrome import ChromeDriverManager
+ 
 root = tk.Tk()
 
+#login function
 def login(driver):
      #variables from gui
     username_text = username_input.get()
@@ -37,7 +39,7 @@ def login(driver):
         #remove notification if it pops up
         try:
             time.sleep(2)
-            driver.find_element_by_xpath('/html/body/div[4]/div/div/div[3]/button[2]').click()
+            driver.find_element_by_xpath('/html/body/div[4]/div/div/div/div[3]/button[2]').click()
         except Exception as e:
             print('Click notification error:',e)
     except Exception as e:
@@ -48,40 +50,45 @@ def like(driver,like_limit):
     clicked_arr = []
     queue_arr = []
     num_likes = 0
-    
+
     while num_likes < like_limit:
+        #put button into list
         try:
-            #put button into list
             like_buttons = driver.find_elements_by_css_selector('span.fr66n>button')
             print('Like buttons selected:',like_buttons)
         except Exception as e:
             print('Error selecting buttons.',e)
 
         #loop through buttons
-        #try and click if it does not exist in clicked_arr
+        #try and click if it does not already exist in clicked_arr
         for button in like_buttons:
-            try:
-                actions = ActionChains(driver)
-                actions.move_to_element(button).perform()
+            if num_likes < like_limit:
+                try:
+                    #move to button
+                    actions = ActionChains(driver)
+                    actions.move_to_element(button).perform()
 
-                #append to clicked queue
-                clicked_arr.append(button)
-                time.sleep(1)
+                    #append to clicked array
+                    clicked_arr.append(button)
+                    time.sleep(1)
 
-                button.click()
-                num_likes = num_likes + 1
-                print('Like number:',num_likes)
+                    #click button and incerement counter
+                    button.click()
+                    num_likes = num_likes + 1
+                    print('Like number:',num_likes)
+                    print('---')
+                    print('---')
+                    print('---')
+                    print('An element was clicked:',button)
+                    print('---')
+                    print('---')
+                    print('---')
+                    time.sleep(1)
+                except Exception as e:
+                    print('Error clicking for',button)
+                    print('Error message',e)
 
-                print('---')
-                print('---')
-                print('---')
-                print('An element was clicked:',button)
-                print('---')
-                print('---')
-                print('---')
-                time.sleep(1)
-            except Exception as e:
-                print('Error clicking for',button,e)
+        time.sleep(5)
 
         # re-analyze DOM. Jump to last item in list
         print('-')
@@ -98,17 +105,17 @@ def like(driver,like_limit):
         print('----')
         print('---')
         print('--')
-        print('-') 
+        print('-')
 
+        #scroll to top to get the correct 'last_button' needed after first iteration
         try:
-            #scroll to top to get the correct 'last_button' needed
             driver.execute_script("window.scrollTo(0,0)")
             reanalyzed_buttons = driver.find_elements_by_css_selector('span.fr66n>button')
+            print('reanalyzed buttons',reanalyzed_buttons)
             last_button = reanalyzed_buttons[-1]
             last_button_scroll_height = last_button.location['y']
             print('last button:',last_button)
-            print(last_button_scroll_height)
-
+            print('last button scroll height',last_button_scroll_height)
         except Exception as e:
             print('Re-analayze issue:',e)
 
@@ -116,8 +123,6 @@ def like(driver,like_limit):
         #jump to last item
         try:
             driver.execute_script("window.scrollTo(0,"+str(last_button_scroll_height)+")")
-            # actions = ActionChains(driver)
-            # actions.move_to_element(last_button).perform()
             print('jump performed')
         except Exception as e:
             print('jump error:',e)
@@ -125,7 +130,6 @@ def like(driver,like_limit):
         #programatically scroll and stop once listener detects that the last button has been removed from the DOM
         scroll_continue = True
         
-
         while scroll_continue:
             print('scroll')
             time.sleep(1)
@@ -135,14 +139,15 @@ def like(driver,like_limit):
                 actions = ActionChains(driver)
                 actions.move_to_element(last_button).perform()
                 print('rescroll performed')
-                
             except Exception as e:
                 print('Last button in list no longer exists...new elements are available')
                 scroll_continue = False
+            #if it does not...stop scrolling
             else:
                 print('Total scroll:',last_button_scroll_height)
                 driver.execute_script("window.scrollTo(0,"+str(last_button_scroll_height)+")")
                 last_button_scroll_height = last_button_scroll_height+500
+                scroll_continue = False
 
     #scroll to top
     driver.execute_script("window.scrollTo(0,0)")
@@ -163,7 +168,8 @@ def like(driver,like_limit):
 #general process
 def launch(config):
     chrome_options = Options()
-    driver = webdriver.Chrome(executable_path='/usr/local/bin/chromedriver',options=chrome_options)
+    #driver = webdriver.Chrome(executable_path='/usr/local/bin/chromedriver',options=chrome_options)
+    driver = webdriver.Chrome(ChromeDriverManager().install())
     driver.get("https://instagram.com")
     
     #login
@@ -175,8 +181,11 @@ def launch(config):
 
     print('EVERYTHING WAS CLICKED CORRECTLY!!!')
 
-
-
+#************************************************************************************************
+#************************************************************************************************
+#************************************************************************************************
+#************************************************************************************************
+#************************************************************************************************
 #tkinter
 canvas = tk.Canvas(root,height=600,width=500,bg="#ddd")
 canvas.pack()
